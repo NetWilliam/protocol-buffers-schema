@@ -13,6 +13,23 @@ var PACKABLE_TYPES = [
   'fixed32', 'sfixed32', 'float'
 ]
 
+var is_description = function(token) {
+    return /^\/\/-/.test(token)
+}
+
+var get_description = function(token) {
+    return token.slice(3)
+}
+
+var get_last_description = function(t) {
+    var last_desc = ""
+    while (is_description(t[0])) {
+        last_desc = get_description(t[0])
+        t.shift()
+    }
+    return last_desc;
+}
+
 var onfieldoptions = function (tokens) {
   var opts = {}
 
@@ -43,9 +60,10 @@ var onfieldoptions = function (tokens) {
   throw new Error('No closing tag for field options')
 }
 
-var onfield = function (tokens) {
+var onfield = function (tokens, desc) {
   var field = {
     name: null,
+    description: desc,
     type: null,
     tag: -1,
     map: null,
@@ -116,20 +134,22 @@ var onmessagebody = function (tokens) {
   }
 
   while (tokens.length) {
+    var desc = get_last_description(tokens)
+    
     switch (tokens[0]) {
       case 'map':
       case 'repeated':
       case 'optional':
       case 'required':
-        body.fields.push(onfield(tokens))
+        body.fields.push(onfield(tokens, desc))
         break
 
       case 'enum':
-        body.enums.push(onenum(tokens))
+        body.enums.push(onenum(tokens, desc))
         break
 
       case 'message':
-        body.messages.push(onmessage(tokens))
+        body.messages.push(onmessage(tokens, desc))
         break
 
       case 'extensions':
@@ -198,13 +218,14 @@ var onextensions = function (tokens) {
   if (tokens.shift() !== ';') throw new Error('Missing ; in extensions definition')
   return {from: from, to: to}
 }
-var onmessage = function (tokens) {
+var onmessage = function (tokens, desc) {
   tokens.shift()
 
   var lvl = 1
   var body = []
   var msg = {
     name: tokens.shift(),
+    description: desc,
     enums: [],
     extends: [],
     messages: [],
@@ -292,11 +313,12 @@ var onenumvalue = function (tokens) {
   }
 }
 
-var onenum = function (tokens) {
+var onenum = function (tokens, desc) {
   tokens.shift()
   var options = {}
   var e = {
     name: tokens.shift(),
+    description: desc,
     values: {},
     options: {}
   }
@@ -581,10 +603,12 @@ var parse = function (buf) {
     enums: [],
     messages: [],
     options: {},
+    description: "",
     extends: []
   }
 
   var firstline = true
+  var desc = get_last_description(tokens)
 
   while (tokens.length) {
     switch (tokens[0]) {
@@ -598,11 +622,11 @@ var parse = function (buf) {
         break
 
       case 'message':
-        schema.messages.push(onmessage(tokens))
+        schema.messages.push(onmessage(tokens, desc))
         break
 
       case 'enum':
-        schema.enums.push(onenum(tokens))
+        schema.enums.push(onenum(tokens, desc))
         break
 
       case 'option':

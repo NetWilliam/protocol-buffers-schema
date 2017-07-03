@@ -1,0 +1,15 @@
+message Request
+//- Request is the type of interface input
+{
+    string S_user = 1;
+    //- S_user is the name of user
+    // just simple comment will be reduced.
+    uint64 U_age = 2;
+    //- U_age is the age of the user
+    /*
+    this
+    is
+    multi-line
+    comments
+    */
+}

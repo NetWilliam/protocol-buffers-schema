@@ -1,6 +1,9 @@
 // example file
 
-message Test {
+//- this is test input
+message Test 
+{
+  //- this is map extended data
   map<string, string> data = 1;
   required string hello = 2;
   oneof test {
