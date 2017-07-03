@@ -291,6 +291,7 @@ var onsyntaxversion = function (tokens) {
 }
 
 var onenumvalue = function (tokens) {
+  var desc = get_last_description(tokens)
   if (tokens.length < 4) throw new Error('Invalid enum value: ' + tokens.slice(0, 3).join(' '))
   if (tokens[1] !== '=') throw new Error('Expected = but found ' + tokens[1])
   if (tokens[3] !== ';' && tokens[3] !== '[') throw new Error('Expected ; or [ but found ' + tokens[1])
@@ -299,6 +300,7 @@ var onenumvalue = function (tokens) {
   tokens.shift()
   var val = {
     value: null,
+    description: desc,
     options: {}
   }
   val.value = Number(tokens.shift())
@@ -309,7 +311,7 @@ var onenumvalue = function (tokens) {
 
   return {
     name: name,
-    val: val
+    val: val,
   }
 }
 
