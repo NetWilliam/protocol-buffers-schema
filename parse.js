@@ -341,9 +341,7 @@ var onenum = function (tokens, desc) {
       continue
     }
     var val = onenumvalue(tokens)
-    e.values[val.name] = val.val
-  }
-
+    e.values[val.name] = val.val } 
   throw new Error('No closing tag for enum')
 }
 
@@ -610,9 +608,9 @@ var parse = function (buf) {
   }
 
   var firstline = true
-  var desc = get_last_description(tokens)
 
   while (tokens.length) {
+    var desc = get_last_description(tokens)
     switch (tokens[0]) {
       case 'package':
         schema.package = onpackagename(tokens)
