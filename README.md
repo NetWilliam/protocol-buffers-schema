@@ -13,95 +13,111 @@ npm install protocol-buffers-schema
 First save the following file as `example.proto`
 
 ```proto
-syntax = "proto2";
+// example file
 
-message Point {
-  required int32 x = 1;
-  required int32 y=2;
-  optional string label = 3;
-}
-
-message Line {
-  required Point start = 1;
-  required Point end = 2;
-  optional string label = 3;
+//- this is test input
+message Test
+{
+  //- this is map extended data
+  map<string, string> data = 1;
+  required string hello = 2;
+  oneof test {
+    uint32 age = 3;
+    uint32 year = 4;
+  }
+  message Nested {
+    optional bytes thing = 1;
+  }
 }
 ```
 
 The run the following example
 
 ``` js
-var fs = require('fs')
-var schema = require('protocol-buffers-schema')
-
-// pass a buffer or string to schema.parse
-var sch = schema.parse(fs.readFileSync('example.proto'))
-
-// will print out the schema as a javascript object
-console.log(sch)
-```
-
-Running the above example will print something like
-
-``` js
+Parsed schema:
 {
-  syntax: 2,
-  package: null,
-  enums: [],
-  messages: [{
-    name: 'Point',
-    enums: [],
-    messages: [],
-    fields: [{
-      name: 'x',
-      type: 'int32',
-      tag: 1,
-      required: true,
-      repeated: false,
-      options: {}
-    }, {
-      name: 'y',
-      type: 'int32',
-      tag: 2,
-      required: true,
-      repeated: false,
-      options: {}
-    }, {
-      name: 'label',
-      type: 'string',
-      tag: 3,
-      required: false,
-      repeated: false,
-      options: {}
-    }]
-  }, {
-    name: 'Line',
-    enums: [],
-    messages: [],
-    fields: [{
-      name: 'start',
-      type: 'Point',
-      tag: 1,
-      required: true,
-      repeated: false,
-      options: {}
-    }, {
-      name: 'end',
-      type: 'Point',
-      tag: 2,
-      required: true,
-      repeated: false,
-      options: {}
-    }, {
-      name: 'label',
-      type: 'string',
-      tag: 3,
-      required: false,
-      repeated: false,
-      options: {}
-    }]
-  }],
-  options:{}
+  "syntax": 3,
+  "package": null,
+  "imports": [],
+  "enums": [],
+  "messages": [
+    {
+      "name": "Test",
+      "description": " this is test input",
+      "enums": [],
+      "extends": [],
+      "messages": [
+        {
+          "name": "Nested",
+          "description": "",
+          "enums": [],
+          "extends": [],
+          "messages": [],
+          "fields": [
+            {
+              "name": "thing",
+              "description": "",
+              "type": "bytes",
+              "tag": 1,
+          "oneof": null,
+          "required": false,
+          "repeated": false,
+          "options": {}
+        },
+        {
+          "name": "hello",
+          "description": "",
+          "type": "string",
+          "tag": 2,
+          "map": null,
+          "oneof": null,
+          "required": true,
+          "repeated": false,
+          "options": {}
+        },
+        {
+          "name": "age",
+          "type": "uint32",
+          "tag": 3,
+          "map": null,
+          "oneof": "test",
+          "required": false,
+          "repeated": false,
+          "options": {}
+        },
+        {
+          "name": "year",
+          "type": "uint32",
+          "tag": 4,
+          "map": null,
+          "oneof": "test",
+          "required": false,
+          "repeated": false,
+          "options": {}
+        }
+      ],
+      "extensions": null
+    }
+  ],
+  "options": {},
+  "description": "",
+  "extends": []
+}
+
+Stringified schema:
+syntax = "proto3";
+
+message Test {
+  message Nested {
+    optional bytes thing = 1;
+  }
+
+  map<string,string> map data = 1;
+  required string hello = 2;
+  oneof test {
+    uint32 age = 3;
+    uint32 year = 4;
+  }
 }
 ```
 
